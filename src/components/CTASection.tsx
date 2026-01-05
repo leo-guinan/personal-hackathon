@@ -1,6 +1,7 @@
 import React from 'react';
 import TestimonialCard from './TestimonialCard';
 import { Zap, Shield } from 'lucide-react';
+import { trackBookingCall, trackPaymentClick } from '../utils/fathom';
 
 interface CTASectionProps {
   onQualifyClick: () => void;
@@ -38,13 +39,19 @@ const CTASection: React.FC<CTASectionProps> = ({ onQualifyClick }) => {
       
       <div className="flex flex-col sm:flex-row gap-4 justify-center mt-6">
         <button
-          onClick={() => window.open('https://buy.stripe.com/7sY28rdtv2RK8NU4FueZ20C', '_blank')}
+          onClick={() => {
+            trackPaymentClick('cta_section_skip_survey');
+            window.open('https://buy.stripe.com/7sY28rdtv2RK8NU4FueZ20C', '_blank');
+          }}
           className="bg-gradient-to-r from-green-500 to-green-600 text-white px-8 py-3 rounded-full font-semibold hover:transform hover:-translate-y-1 hover:shadow-lg transition-all duration-300"
         >
           Skip Survey - Buy Now
         </button>
         <button
-          onClick={() => window.open('https://cal.com/build-in-public-university/personal-hackathon', '_blank')}
+          onClick={() => {
+            trackBookingCall('cta_section');
+            window.open('https://cal.com/ideanexus/personal-hackathon-fit', '_blank');
+          }}
           className="bg-gradient-to-r from-blue-500 to-blue-600 text-white px-8 py-3 rounded-full font-semibold hover:transform hover:-translate-y-1 hover:shadow-lg transition-all duration-300"
         >
           Book a Call First

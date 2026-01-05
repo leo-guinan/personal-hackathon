@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ChevronLeft, ChevronRight, CheckCircle } from 'lucide-react';
 import { SURVEY_QUESTIONS, calculateOutcome, SurveyResponse, SurveyResult } from '../types/survey';
 import SurveyOutcome from './SurveyOutcome';
+import { trackSurveyStart, trackSurveyCompletion } from '../utils/fathom';
 
 const QualificationSurvey: React.FC = () => {
   const [currentQuestion, setCurrentQuestion] = useState(0);
@@ -9,6 +10,11 @@ const QualificationSurvey: React.FC = () => {
   const [selectedOption, setSelectedOption] = useState<number | null>(null);
   const [isComplete, setIsComplete] = useState(false);
   const [result, setResult] = useState<SurveyResult | null>(null);
+
+  // Track survey start on mount
+  useEffect(() => {
+    trackSurveyStart();
+  }, []);
 
   const handleOptionSelect = (optionIndex: number) => {
     setSelectedOption(optionIndex);
@@ -44,6 +50,9 @@ const QualificationSurvey: React.FC = () => {
         outcome,
         responses: updatedResponses
       };
+      
+      // Track survey completion with all answer data
+      trackSurveyCompletion(finalResult);
       
       setResult(finalResult);
       setIsComplete(true);

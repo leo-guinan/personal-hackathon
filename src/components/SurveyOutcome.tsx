@@ -1,6 +1,7 @@
 import React from 'react';
 import { ArrowLeft, Calendar, Gift, Shield, Zap, CheckCircle, Clock, Users } from 'lucide-react';
 import { SurveyResult } from '../types/survey';
+import { trackBookingCall, trackPaymentClick } from '../utils/fathom';
 
 interface SurveyOutcomeProps {
   result: SurveyResult;
@@ -102,9 +103,10 @@ const SurveyOutcome: React.FC<SurveyOutcomeProps> = ({ result, onBackToLanding }
         <p className="text-gray-400 text-sm mt-4">
           Want to discuss your situation first?{' '}
           <a 
-            href="https://cal.com/build-in-public-university/personal-hackathon" 
+            href="https://cal.com/ideanexus/personal-hackathon-fit" 
             target="_blank" 
             rel="noopener noreferrer"
+            onClick={() => trackBookingCall('not_ready_outcome')}
             className="text-orange-400 hover:text-orange-300 underline"
           >
             Book a free call
@@ -158,13 +160,23 @@ const SurveyOutcome: React.FC<SurveyOutcomeProps> = ({ result, onBackToLanding }
         </div>
         
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
-          <button className="bg-gradient-to-r from-purple-500 to-purple-600 text-white px-8 py-4 rounded-full font-semibold hover:transform hover:-translate-y-1 hover:shadow-lg transition-all duration-300">
-            onClick={() => window.open('https://cal.com/build-in-public-university/personal-hackathon', '_blank')}
+          <button 
+            onClick={() => {
+              trackBookingCall('maybe_ready_outcome');
+              window.open('https://cal.com/ideanexus/personal-hackathon-fit', '_blank');
+            }}
+            className="bg-gradient-to-r from-purple-500 to-purple-600 text-white px-8 py-4 rounded-full font-semibold hover:transform hover:-translate-y-1 hover:shadow-lg transition-all duration-300"
+          >
             <Calendar className="w-5 h-5 inline mr-2" />
             Book a Call
           </button>
-          <button className="bg-gradient-to-r from-yellow-400 to-yellow-600 text-gray-900 px-6 py-4 rounded-full font-semibold hover:transform hover:-translate-y-1 hover:shadow-lg transition-all duration-300">
-            onClick={() => window.open('https://buy.stripe.com/7sY28rdtv2RK8NU4FueZ20C', '_blank')}
+          <button 
+            onClick={() => {
+              trackPaymentClick('maybe_ready_outcome');
+              window.open('https://buy.stripe.com/7sY28rdtv2RK8NU4FueZ20C', '_blank');
+            }}
+            className="bg-gradient-to-r from-yellow-400 to-yellow-600 text-gray-900 px-6 py-4 rounded-full font-semibold hover:transform hover:-translate-y-1 hover:shadow-lg transition-all duration-300"
+          >
             I'm Ready - Buy Now
           </button>
         </div>
@@ -229,15 +241,25 @@ const SurveyOutcome: React.FC<SurveyOutcomeProps> = ({ result, onBackToLanding }
         </div>
         
         <div className="flex flex-col sm:flex-row gap-4 justify-center mb-8">
-          <button className="bg-gradient-to-r from-yellow-400 to-yellow-600 text-gray-900 px-12 py-6 text-xl font-bold rounded-full hover:transform hover:-translate-y-2 hover:shadow-2xl hover:shadow-yellow-400/40 transition-all duration-300 uppercase tracking-wide flex items-center gap-3 justify-center">
-            onClick={() => window.open('https://buy.stripe.com/7sY28rdtv2RK8NU4FueZ20C', '_blank')}
+          <button 
+            onClick={() => {
+              trackPaymentClick('definitely_ready_outcome');
+              window.open('https://buy.stripe.com/7sY28rdtv2RK8NU4FueZ20C', '_blank');
+            }}
+            className="bg-gradient-to-r from-yellow-400 to-yellow-600 text-gray-900 px-12 py-6 text-xl font-bold rounded-full hover:transform hover:-translate-y-2 hover:shadow-2xl hover:shadow-yellow-400/40 transition-all duration-300 uppercase tracking-wide flex items-center gap-3 justify-center"
+          >
             <Zap className="w-6 h-6" />
             Secure Your Spot - $997
           </button>
         </div>
         
-        <button className="text-gray-400 hover:text-yellow-400 font-medium transition-colors duration-300 mb-8">
-          onClick={() => window.open('https://cal.com/build-in-public-university/personal-hackathon', '_blank')}
+        <button 
+          onClick={() => {
+            trackBookingCall('definitely_ready_outcome');
+            window.open('https://cal.com/ideanexus/personal-hackathon-fit', '_blank');
+          }}
+          className="text-gray-400 hover:text-yellow-400 font-medium transition-colors duration-300 mb-8"
+        >
           Still Have Questions? Book a Quick Call
         </button>
                 
