@@ -171,6 +171,32 @@ npm run build
 
 This creates an optimized production build in the `dist/` directory.
 
+### Deploy to GitHub Pages
+
+The project includes a GitHub Actions workflow that automatically deploys to GitHub Pages on every push to the `main` branch.
+
+#### Setup Instructions
+
+1. **Enable GitHub Pages in your repository:**
+   - Go to Settings → Pages
+   - Under "Source", select "GitHub Actions"
+
+2. **Push to main branch:**
+   - The workflow (`.github/workflows/deploy.yml`) will automatically:
+     - Build the Vite app
+     - Deploy to GitHub Pages
+   - The base path is automatically configured based on your repository name
+
+3. **Manual deployment:**
+   - You can also trigger the workflow manually from the Actions tab → "Deploy to GitHub Pages" → "Run workflow"
+
+#### How It Works
+
+- **User/Organization Pages** (repo name ends with `.github.io`): Deploys to root path `/`
+- **Project Pages** (any other repo name): Deploys to `/{repo-name}/`
+
+The workflow automatically detects your repo type and sets the correct base path.
+
 ### Deploy to Vercel/Netlify
 
 1. Connect your repository to Vercel or Netlify
