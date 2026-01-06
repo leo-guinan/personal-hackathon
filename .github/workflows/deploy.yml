@@ -36,15 +36,25 @@ jobs:
         run: |
           REPO_NAME="${{ github.event.repository.name }}"
           echo "Repository name: $REPO_NAME"
-          if [[ "$REPO_NAME" == *".github.io" ]]; then
+          
+          # For custom domains, typically use root path "/"
+          # For standard GitHub Pages project pages, use "/repo-name/"
+          # Override via repository variable: Settings → Secrets and variables → Actions → Variables → VITE_BASE_PATH
+          if [[ -n "${{ vars.VITE_BASE_PATH }}" ]]; then
+            BASE_PATH="${{ vars.VITE_BASE_PATH }}"
+            echo "Using custom base path from repository variable: $BASE_PATH"
+          elif [[ "$REPO_NAME" == *".github.io" ]]; then
             BASE_PATH="/"
             echo "Detected user/organization page, using root path"
           else
-            BASE_PATH="/$REPO_NAME/"
-            echo "Detected project page, using: $BASE_PATH"
+            # Default to root for custom domains (most common)
+            # Change to "/$REPO_NAME/" if using standard GitHub Pages project page URL
+            BASE_PATH="/"
+            echo "Using root path (custom domain default)"
+            echo "To use subdirectory, set repository variable VITE_BASE_PATH=/$REPO_NAME/"
           fi
           echo "base_path=$BASE_PATH" >> $GITHUB_OUTPUT
-          echo "Base path will be: $BASE_PATH"
+          echo "Final base path: $BASE_PATH"
 
       - name: Build
         env:

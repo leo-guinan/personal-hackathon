@@ -4,10 +4,11 @@ import react from '@vitejs/plugin-react';
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => {
   // GitHub Pages configuration
-  // For project pages (not user/organization pages), set base to repo name
+  // For custom domains serving from root, use base path "/"
+  // For GitHub Pages project pages, use "/repo-name/"
   // The workflow will set VITE_BASE_PATH automatically
-  // Default to '/personal-hackathon/' for this project if not set
-  const basePath = process.env.VITE_BASE_PATH || (process.env.GITHUB_PAGES === 'true' ? '/personal-hackathon/' : '/');
+  // Default to "/" for custom domains (most common setup)
+  const basePath = process.env.VITE_BASE_PATH || '/';
   
   console.log('Building with base path:', basePath);
   
