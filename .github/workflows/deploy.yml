@@ -35,35 +35,87 @@ jobs:
         id: base_path
         run: |
           REPO_NAME="${{ github.event.repository.name }}"
+          echo "Repository name: $REPO_NAME"
           if [[ "$REPO_NAME" == *".github.io" ]]; then
-            echo "base_path=/" >> $GITHUB_OUTPUT
+            BASE_PATH="/"
+            echo "Detected user/organization page, using root path"
           else
-            echo "base_path=/$REPO_NAME/" >> $GITHUB_OUTPUT
+            BASE_PATH="/$REPO_NAME/"
+            echo "Detected project page, using: $BASE_PATH"
           fi
+          echo "base_path=$BASE_PATH" >> $GITHUB_OUTPUT
+          echo "Base path will be: $BASE_PATH"
 
       - name: Build
         env:
           GITHUB_PAGES: 'true'
           VITE_BASE_PATH: ${{ steps.base_path.outputs.base_path }}
         run: |
-          echo "Building with base path: $VITE_BASE_PATH"
+          echo "=========================================="
+          echo "BUILD CONFIGURATION"
+          echo "=========================================="
+          echo "GITHUB_PAGES: $GITHUB_PAGES"
+          echo "VITE_BASE_PATH: $VITE_BASE_PATH"
+          echo "=========================================="
+          echo "Starting build..."
           npm run build
+          echo "Build completed!"
 
       - name: Verify build output
         run: |
-          echo "Checking build output..."
-          ls -la dist/
+          echo "=========================================="
+          echo "BUILD OUTPUT VERIFICATION"
+          echo "=========================================="
+          echo "Contents of dist/ directory:"
+          ls -la dist/ || echo "dist/ directory not found!"
+          echo ""
+          echo "Contents of dist/assets/ (if exists):"
+          ls -la dist/assets/ 2>/dev/null || echo "dist/assets/ directory not found!"
+          echo ""
           if [ -f dist/index.html ]; then
             echo "✓ index.html exists"
-            echo "Checking base path in index.html:"
-            grep -o 'href="[^"]*"' dist/index.html | head -5 || true
+            echo ""
+            echo "First 50 lines of index.html:"
+            head -50 dist/index.html
+            echo ""
+            echo "Checking for asset references in index.html:"
+            echo "CSS links:"
+            grep -o 'href="[^"]*"' dist/index.html | grep -i css || echo "No CSS links found"
+            echo "JS scripts:"
+            grep -o 'src="[^"]*"' dist/index.html | grep -i js || echo "No JS scripts found"
+            echo ""
+            echo "Checking base path usage:"
+            if grep -q "/personal-hackathon/" dist/index.html; then
+              echo "✓ Found /personal-hackathon/ in index.html"
+            else
+              echo "✗ /personal-hackathon/ NOT found in index.html"
+            fi
+            if grep -q 'href="/' dist/index.html && ! grep -q 'href="/personal-hackathon/' dist/index.html; then
+              echo "⚠ WARNING: Found absolute paths without base path!"
+            fi
           else
             echo "✗ index.html not found!"
             exit 1
           fi
+          echo "=========================================="
 
       - name: Setup Pages
         uses: actions/configure-pages@v4
+
+      - name: Final artifact check
+        run: |
+          echo "=========================================="
+          echo "FINAL ARTIFACT CHECK BEFORE UPLOAD"
+          echo "=========================================="
+          echo "Full directory tree of dist/:"
+          find dist -type f -o -type d | sort
+          echo ""
+          echo "File sizes:"
+          du -sh dist/* 2>/dev/null || true
+          du -sh dist/assets/* 2>/dev/null || true
+          echo ""
+          echo "Checking index.html one more time:"
+          cat dist/index.html | grep -E '(href|src)=' | head -10
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
